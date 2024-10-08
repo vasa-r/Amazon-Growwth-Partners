@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CartItem from "../components/CartComponents/CartItem";
-// import AddAddress from "../components/modals/AddAddress";
-// import AddPayment from "../components/modals/AddPayment";
+import AddAddress from "../components/modals/AddAddress";
+import AddPayment from "../components/modals/AddPayment";
 
 interface CartItemProps {
   id: string;
@@ -14,6 +14,8 @@ interface CartItemProps {
 const CartPage = () => {
   const [showAddress, setShowAddress] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [newAddress, setNewAddress] = useState(false);
+  const [newPayment, setNewPayment] = useState(false);
   const [cartItems, setCartItems] = useState<CartItemProps[]>([]);
 
   useEffect(() => {
@@ -23,6 +25,29 @@ const CartPage = () => {
 
     setCartItems(storedItems);
   }, []);
+
+  //   useEffect(() => {
+  //     const handleClickOutside = (event: MouseEvent) => {
+  //       if (
+  //         menuRef.current &&
+  //         !menuRef.current.contains(event.target as Node) &&
+  //         menuButtonRef.current &&
+  //         !menuButtonRef.current.contains(event.target as Node)
+  //       ) {
+  //         setShowProfile(false);
+  //       }
+  //     };
+
+  //     if (showProfile) {
+  //       document.addEventListener("mousedown", handleClickOutside);
+  //     } else {
+  //       document.removeEventListener("mousedown", handleClickOutside);
+  //     }
+
+  //     return () => {
+  //       document.removeEventListener("mousedown", handleClickOutside);
+  //     };
+  //   }, [showProfile]);
 
   const clearCart = () => {
     Object.keys(window.localStorage)
@@ -54,7 +79,13 @@ const CartPage = () => {
 
   return (
     <>
-      {/* {showAddress} */}
+      {newAddress && (
+        <AddAddress showAddress={newAddress} setModal={setNewAddress} />
+      )}
+      {newPayment && (
+        <AddPayment showPayment={newPayment} setModal={setNewPayment} />
+      )}
+
       <div className="btm-comp p-10  py-11">
         <div className="flex justify-between">
           <h1 className="text-2xl">Your Cart Items</h1>
@@ -88,7 +119,7 @@ const CartPage = () => {
             <h1 className="text-2xl">Delivery address:</h1>
             <div
               className="p-1 w-96 border bg-white center border-black rounded-sm cursor-pointer"
-              onClick={() => setShowAddress(true)}
+              onClick={() => setShowAddress(!showAddress)}
             >
               Choose delivery address
             </div>
@@ -96,7 +127,12 @@ const CartPage = () => {
             {showAddress && (
               <div className="p-1 flex flex-col gap-3 absolute top-10 right-[16px] z-50 w-96 border bg-white center border-black rounded-sm ">
                 <p>No Saved address</p>
-                <button className="btn btn-primary">Add new Address</button>
+                <button
+                  onClick={() => setNewAddress(true)}
+                  className="btn btn-primary"
+                >
+                  Add new Address
+                </button>
               </div>
             )}
           </div>
@@ -104,14 +140,19 @@ const CartPage = () => {
             <h1 className="text-2xl">Payment Methods:</h1>
             <div
               className="p-1 w-96 border bg-white center border-black rounded-sm cursor-pointer"
-              onClick={() => setShowPayment(true)}
+              onClick={() => setShowPayment(!showPayment)}
             >
               Choose payment method
             </div>
             {showPayment && (
               <div className="p-1 flex flex-col gap-3 absolute top-10 right-0 z-50 w-96 border bg-white center border-black rounded-sm ">
                 <p>No Saved payment methods</p>
-                <button className="btn btn-primary">Add payment method</button>
+                <button
+                  onClick={() => setNewPayment(true)}
+                  className="btn btn-primary"
+                >
+                  Add payment method
+                </button>
               </div>
             )}
           </div>
