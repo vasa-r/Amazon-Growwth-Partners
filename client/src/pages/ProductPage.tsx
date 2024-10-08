@@ -1,51 +1,95 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import star from "../assets/star.svg";
 import minus from "../assets/minus.svg";
 import plus from "../assets/plus.svg";
 import CartModal from "../components/modals/CartModal";
+import { useParams } from "react-router-dom";
+import { getSingleProduct } from "../api/product";
 
-const data = {
-  title: "Essence Mascara Lash Princess",
-  description:
-    "The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects. Achieve dramatic lashes with this long-lasting and cruelty-free formula.",
-  category: "beauty",
-  price: 9.99,
-  rating: 4.94,
-  shippingInformation: "Ships in 1 month",
-  image:
-    "https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/1.png",
-};
+interface Items {
+  category: string;
+  description: string;
+  image: string;
+  price: number;
+  rating: number;
+  shippingInformation: string;
+  title: string;
+  _id: string;
+}
 
 const ProductPage = () => {
+  const [product, setProduct] = useState<Items | undefined>();
   const [quantity, setQuantity] = useState(1);
+  const [cartModal, setCartModal] = useState<boolean>(false);
+  const { id } = useParams();
+
+  useEffect(() => {
+    getProduct();
+  }, []);
 
   const handleIncrement = () => {
     setQuantity((prev) => prev + 1);
   };
+
   const handleDecrement = () => {
     setQuantity((prev) => (prev === 1 ? 1 : prev - 1));
   };
+
+  const handleAddCart = () => {
+    // console.log(quantity, product?.title, product?.image, product?.price);
+    const data = {
+      quantity: quantity,
+      title: product?.title,
+      image: product?.image,
+      price: Math.ceil(product?.price ? product?.price : 0),
+      id: product?._id,
+    };
+    const key = `cartItem_${product?._id}`;
+    window.localStorage.setItem(key, JSON.stringify(data));
+    setCartModal(true);
+  };
+
+  const getProduct = async () => {
+    try {
+      const items = await getSingleProduct(id);
+      const { data } = items.data;
+      setProduct(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
-      <CartModal />
+      {cartModal && (
+        <CartModal
+          showModal={cartModal}
+          setShowModal={setCartModal}
+          title={product?.title}
+        />
+      )}
+
       <div className="btm-comp p-10 h-[calc(100vh-80px)] flex justify-center items-center">
         <div className="w-full flex gap-3">
           <div>
-            <img className="h-[35rem] w-[50rem]" src={data.image} alt="" />
+            <img
+              className="h-[35rem] w-[50rem]"
+              src={product?.image}
+              alt="product image"
+            />
           </div>
           <div className="flex-1">
-            <h1 className="text-black text-5xl font-bold">{data.title}</h1>
+            <h1 className="text-black text-5xl font-bold">{product?.title}</h1>
             <p className="pt-7 text-black text-xl font-medium">
-              {data.description}
+              {product?.description}
             </p>
             <p className="text-lg flex">
-              Ratings: {data.rating}
+              Ratings: {product?.rating}
               <img className="w-4 fill-gold" src={star} alt="rating" />
             </p>
             <h1 className="text-3xl font-semibold mt-8">
-              ₹ {Math.ceil(data.price * 83)}.00
+              ₹ {product ? Math.ceil(product.price * 83) : 0}.00
             </h1>
-            <p className="text-lg mt-2">{data.shippingInformation}</p>
+            <p className="text-lg mt-2">{product?.shippingInformation}</p>
 
             <div className="flex items-center mt-8">
               <h1 className="text-2xl">Quantity: </h1>{" "}
@@ -65,7 +109,12 @@ const ProductPage = () => {
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary mt-8 w-3/4">Add to cart</button>
+            <button
+              className="btn btn-primary mt-8 w-3/4"
+              onClick={handleAddCart}
+            >
+              Add to cart
+            </button>
           </div>
         </div>
       </div>
