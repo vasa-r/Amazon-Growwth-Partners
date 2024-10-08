@@ -35,7 +35,7 @@ const verifyToken = (req: CustomUserReq, res: Response, next: NextFunction) => {
 
     const decoded = jwt.verify(token, secret) as JwtPayload;
 
-    console.log(decoded);
+    // console.log(decoded);
     if (decoded && typeof decoded === "object" && decoded.userId) {
       req.user = decoded.userId;
       console.log(req.user);
