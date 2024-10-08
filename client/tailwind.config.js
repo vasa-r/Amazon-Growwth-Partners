@@ -5,6 +5,10 @@ export default {
     extend: {
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],
+        dance: ["Dancing Script", "cursive"],
+      },
+      colors: {
+        gold: "#FFD700",
       },
     },
   },

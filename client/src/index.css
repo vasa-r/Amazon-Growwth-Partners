@@ -1,11 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap");
 
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
 
 body {
-  @apply relative bg-black text-white/70 font-outfit;
+  @apply relative  text-black/90 font-outfit;
 }
 
 body::before {
@@ -28,6 +29,11 @@ body::before {
     );
 }
 
+.btm-comp {
+  @apply mt-20 w-full h-full;
+  /* height: calc(100vh-80px); */
+}
+
 .container {
   @apply max-w-5xl mx-auto px-5 !important;
 }
@@ -42,7 +48,7 @@ body::before {
 
 .btn-primary {
   @apply bg-white/80;
-  background: linear-gradient(92.35deg, #14b8a6 -5.27%, #f7e309 96.04%);
+  background: linear-gradient(92.35deg, #fcba03 -5.27%, #fcba03 96.04%);
 }
 
 .card {
@@ -52,11 +58,11 @@ body::before {
 input[type="text"],
 input[type="email"],
 input[type="password"] {
-  @apply w-full px-2 py-2 bg-transparent border-2 rounded-lg outline-none border-white/20;
+  @apply w-full px-2 py-2 bg-transparent border-2 rounded-lg outline-none border-black/20;
 }
 
 form label {
-  @apply block my-1 text-sm text-white/70;
+  @apply block my-1 text-sm text-black/70;
 }
 
 .form-group {
