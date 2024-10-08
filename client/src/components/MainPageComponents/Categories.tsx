@@ -1,29 +1,66 @@
-const data = [
-  { id: 1, name: "Electronics" },
-  { id: 2, name: "Fashion" },
-  { id: 3, name: "Home " },
-  { id: 4, name: "Beauty " },
-  { id: 5, name: "Sports" },
-  { id: 6, name: "Books" },
-  { id: 7, name: "Toys" },
-  { id: 8, name: "Automotive" },
-  { id: 9, name: "Health" },
-  { id: 10, name: "Pet Supplies" },
-];
+import { formatCategoryName } from "../../utils/constants";
 
-const Categories = () => {
+interface CateProps {
+  selectedCategory: string;
+  categories: string[];
+  selectCategory: (cat: string) => void;
+}
+
+const Categories = ({
+  selectedCategory,
+  categories,
+  selectCategory,
+}: CateProps) => {
   return (
-    <div className="flex justify-between h-32 w-full">
-      {data.map((item) => {
+    <div className="flex gap-4 h-32 w-full overflow-auto whitespace-nowrap">
+      <div
+        className="inline-flex flex-col gap-4 w-[140px] items-center cursor-pointer"
+        onClick={() => selectCategory("all")}
+      >
+        <div
+          className={`h-24 w-24 center  rounded-full text-4xl flex items-center justify-center ${
+            selectedCategory === "all"
+              ? "border-green-500 text-green-500 border-2"
+              : "border-black border-2"
+          }`}
+        >
+          A
+        </div>
+        <p
+          className={`text-lg ${
+            selectedCategory === "all" ? "text-green-500" : ""
+          }`}
+        >
+          All
+        </p>
+      </div>
+      {categories.map((item: string, index: number) => {
+        const formatName = formatCategoryName(item);
+        const displayItem = `${formatName
+          .charAt(0)
+          .toUpperCase()}${formatName.slice(1)}`;
         return (
           <div
-            key={item.id}
-            className="flex flex-col justify-center items-center cursor-pointer"
+            key={index}
+            className="inline-flex flex-col gap-4 w-[140px] items-center cursor-pointer"
+            onClick={() => selectCategory(item)}
           >
-            <div className="h-24 w-24 center border-2 border-black rounded-full text-4xl">
-              {item.name.charAt(0)}
+            <div
+              className={`h-24 w-24 center  rounded-full text-4xl flex items-center justify-center ${
+                selectedCategory === item
+                  ? "border-green-500 text-green-500 border-2"
+                  : "border-black border-2"
+              }`}
+            >
+              {displayItem.charAt(0)}
             </div>
-            <p>{item.name}</p>
+            <p
+              className={`text-lg ${
+                selectedCategory === item ? "text-green-500" : ""
+              }`}
+            >
+              {displayItem}
+            </p>
           </div>
         );
       })}
