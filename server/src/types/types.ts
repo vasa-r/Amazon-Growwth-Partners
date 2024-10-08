@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { Types } from "mongoose";
 
 export interface responseType {
   success: boolean;
@@ -44,6 +45,15 @@ export interface SignUpTypes {
 export interface LoginTypes {
   email: string;
   password: string;
+}
+
+export interface AddAddressType {
+  addressTitle: string;
+  buildNo: string;
+  address: string;
+  city: string;
+  pincode: string;
+  phone: string;
 }
 
 export interface CustomUserReq extends Request {

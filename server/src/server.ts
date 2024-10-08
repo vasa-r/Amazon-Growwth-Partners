@@ -5,6 +5,7 @@ import connectDb from "./config/connectDb";
 import userRouter from "./routes/userRoute";
 import errorHandler from "./middleware/errorHandler";
 import productRouter from "./routes/productRoute";
+import addressRouter from "./routes/addressRoute";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
+app.use("/api/address", addressRouter);
 
 app.use("*", (req, res) => {
   res.status(404).json({
