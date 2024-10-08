@@ -68,3 +68,7 @@ form label {
 .form-group {
   @apply mb-5;
 }
+
+.center {
+  @apply flex justify-center items-center;
+}

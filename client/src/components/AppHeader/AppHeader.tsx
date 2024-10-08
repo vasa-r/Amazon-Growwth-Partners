@@ -4,7 +4,7 @@ import { navLinks } from "../../utils/constants";
 
 const AppHeader = () => {
   return (
-    <div className="fixed text-black top-0 left-0 z-10 w-full border-b border-black ">
+    <div className="fixed text-black top-0 left-0 z-10 w-full border-b border-black bg-white">
       <nav className="container flex justify-between py-4">
         <Link
           to="/"
