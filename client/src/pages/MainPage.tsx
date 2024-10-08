@@ -74,6 +74,7 @@ const MainPage = () => {
               image={item.image}
               title={item.title}
               price={item.price}
+              id={item._id}
             />
           ))}
         </div>
