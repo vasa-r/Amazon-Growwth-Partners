@@ -58,5 +58,10 @@ This README describes the user journey in the e-commerce application, covering b
 ## Setup Instructions
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/ecommerce-app.git
-   cd ecommerce-app
+   git clone https://github.com/vasa-r/Amazon-Growwth-Partners.git
+
+   For client:
+   cd client
+   
+   For server:
+   cd server
