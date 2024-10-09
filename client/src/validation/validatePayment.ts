@@ -1,5 +1,6 @@
 interface PaymentType {
   name: string;
+  paymentType: string;
   cardNumber?: string;
   cvv?: string;
   upiId?: string;
@@ -7,6 +8,10 @@ interface PaymentType {
 
 const validatePayment = (values: PaymentType, type: string) => {
   const errors: Partial<PaymentType> = {};
+
+  if (values.paymentType === "Choose payment type") {
+    errors.paymentType = "Please choose payment type";
+  }
 
   if (type === "UPI" || type === "Credit Card" || type === "Debit Card") {
     if (!values.name) {

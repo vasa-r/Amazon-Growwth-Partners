@@ -2,6 +2,8 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import close from "../../assets/close.svg";
 import { toast } from "react-toastify";
 import validatePayment from "../../validation/validatePayment";
+import { addPayment } from "../../api/payment";
+import { useNavigate } from "react-router-dom";
 
 interface AddProps {
   showPayment: boolean;
@@ -11,6 +13,7 @@ interface AddProps {
 interface PaymentType {
   name: string;
   cardNumber?: string;
+  paymentType: string;
   cvv?: string;
   upiId?: string;
 }
@@ -19,6 +22,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
   const initialValues: PaymentType = {
     name: "",
     cardNumber: "",
+    paymentType: "Choose payment type",
     cvv: "",
     upiId: "",
   };
@@ -26,12 +30,13 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
   const [paymentData, setPaymentData] = useState<PaymentType>(initialValues);
   const [formErrors, setFormErrors] = useState<Partial<PaymentType>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [type, setType] = useState("Choose payment type");
+  //   const [type, setType] = useState("Choose payment type");
   const [showType, setShowType] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   const changeType = (type: string) => {
-    setType(type);
+    setPaymentData((prev) => ({ ...prev, paymentType: type }));
     setShowType(false);
   };
 
@@ -62,12 +67,12 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const errors = validatePayment(paymentData, type);
+    const errors = validatePayment(paymentData, paymentData.paymentType);
     setFormErrors(errors);
     if (Object.keys(errors).length === 0) {
       setIsLoading(true);
       try {
-        console.log("payment added");
+        await createPayment();
       } catch (error) {
         console.log(error);
       } finally {
@@ -78,6 +83,42 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
       toast.error("Please ensure valid payment info is given");
     }
   };
+
+  const createPayment = async () => {
+    try {
+      const dataToSubmit = {
+        ...paymentData,
+        name: paymentData.name,
+        cardNumber: paymentData.cardNumber || null,
+        cvv: paymentData.cvv || null,
+        upiId: paymentData.upiId || null,
+      };
+      const response = await addPayment(
+        dataToSubmit.name,
+        dataToSubmit.paymentType,
+        dataToSubmit.cardNumber,
+        dataToSubmit.cvv,
+        dataToSubmit.upiId
+      );
+
+      if (response.success || response.status === 201) {
+        toast.success(response?.data?.message);
+        setModal(false);
+        navigate("/cart");
+      } else {
+        toast.error(
+          response?.data?.message ||
+            "Couldn't add adress. Please try again later"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        "An error occurred during adding address. Please try again later."
+      );
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
       <div
@@ -97,7 +138,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
         >
           Choose type :{" "}
           <div className="border border-black bg-slate-100 w-72 cursor-pointer center">
-            {type}
+            {paymentData.paymentType}
           </div>
           {showType && (
             <div className="border flex flex-col gap-1 p-3  absolute top-8 right-0 border-black bg-slate-100 w-72 cursor-pointer z-50">
@@ -123,7 +164,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
           )}
         </div>
 
-        {type === "Debit Card" && (
+        {paymentData.paymentType === "Debit Card" && (
           <form
             className="w-full flex flex-col gap-4 mt-4"
             onSubmit={handleSubmit}
@@ -146,7 +187,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
                 type="text"
                 id="card number"
                 name="cardNumber"
-                value={paymentData.cardNumber}
+                value={paymentData?.cardNumber}
                 onChange={handleChange}
                 placeholder="Enter card number"
               />
@@ -172,7 +213,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
             </button>
           </form>
         )}
-        {type === "Credit Card" && (
+        {paymentData.paymentType === "Credit Card" && (
           <form
             className="w-full flex flex-col gap-4 mt-4"
             onSubmit={handleSubmit}
@@ -222,7 +263,7 @@ const AddPayment = ({ showPayment, setModal }: AddProps) => {
             </button>
           </form>
         )}
-        {type === "UPI" && (
+        {paymentData.paymentType === "UPI" && (
           <form
             onSubmit={handleSubmit}
             className="w-full flex flex-col gap-4 mt-4"

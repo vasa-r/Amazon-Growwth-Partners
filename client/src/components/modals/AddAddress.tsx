@@ -2,6 +2,8 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import close from "../../assets/close.svg";
 import validateAddress from "../../validation/validateAddress";
 import { toast } from "react-toastify";
+import { addAddress } from "../../api/address";
+import { useNavigate } from "react-router-dom";
 
 interface AddressType {
   addressTitle: string;
@@ -30,6 +32,7 @@ const AddAddress = ({ showAddress, setModal }: AddProps) => {
   const [formErrors, setFormErrors] = useState<Partial<AddressType>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,7 +47,7 @@ const AddAddress = ({ showAddress, setModal }: AddProps) => {
     if (Object.keys(errors).length === 0) {
       setIsLoading(true);
       try {
-        console.log("address added");
+        await createAddress();
       } catch (error) {
         console.log(error);
       } finally {
@@ -56,9 +59,34 @@ const AddAddress = ({ showAddress, setModal }: AddProps) => {
     }
   };
 
-  useEffect(() => {
-    console.log(addressData);
-  }, [addressData]);
+  const createAddress = async () => {
+    try {
+      const response = await addAddress(
+        addressData.addressTitle,
+        addressData.buildNo,
+        addressData.address,
+        addressData.city,
+        addressData.pincode,
+        addressData.phone
+      );
+
+      if (response.success || response.status === 201) {
+        toast.success(response?.data?.message);
+        setModal(false);
+        navigate("/cart");
+      } else {
+        toast.error(
+          response?.data?.message ||
+            "Couldn't add adress. Please try again later"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        "An error occurred during adding address. Please try again later."
+      );
+    }
+  };
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
