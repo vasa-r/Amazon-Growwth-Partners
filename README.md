@@ -51,7 +51,7 @@ This README describes the user journey in the e-commerce application, covering b
 
 ## Technology Stack
 - **Frontend**: React, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express.js, Mongoose
+- **Backend**: Node.js, Express.js, TypeScript, Mongoose
 - **Database**: MongoDB
 - **Authentication**: JSON Web Tokens (JWT)
 
