@@ -85,6 +85,9 @@ const ConfirmOrder = ({
               <p>{payment.name}</p>
               {payment?.cardNumber && <p>Card : {payment?.cardNumber}</p>}
               {payment?.upiId && <p>UPI ID : {payment?.upiId}</p>}
+              {!payment?.cardNumber && !payment?.upiId && (
+                <p>Cash On Delivery</p>
+              )}
             </div>
           </div>
         </div>
