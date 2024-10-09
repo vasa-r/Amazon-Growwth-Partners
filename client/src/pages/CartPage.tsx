@@ -27,12 +27,12 @@ interface Address {
   _id: string;
 }
 interface Payment {
-  name: string;
+  name?: string;
   paymentType: string;
   cardNumber?: string;
   cvv?: string;
   upiId?: string;
-  _id: string;
+  _id?: string;
 }
 
 export interface OrderType {
@@ -110,8 +110,12 @@ const CartPage = () => {
     setSelectedAddress(arg);
   };
 
-  const selectDeliveryPayment = (arg: Payment) => {
-    setSelectedPayment(arg);
+  const selectDeliveryPayment = (arg: Payment | "COD") => {
+    if (arg === "COD") {
+      setSelectedPayment({ paymentType: "COD" });
+    } else {
+      setSelectedPayment(arg);
+    }
   };
 
   const showConfirmModal = () => {
@@ -173,7 +177,7 @@ const CartPage = () => {
         toast.success(response?.data?.message);
         setConfirmOrder(false);
         clearCart();
-        navigate("/cart");
+        navigate("/orders");
       } else {
         toast.error(
           response?.data?.message ||
@@ -187,7 +191,7 @@ const CartPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="btm-comp center p-10  py-11">
+      <div className="p-10 btm-comp center py-11">
         <h1 className="text-2xl font-bold">
           Cart is Empty. Please add products
         </h1>
@@ -213,14 +217,14 @@ const CartPage = () => {
         />
       )}
 
-      <div className="btm-comp p-10  py-11">
+      <div className="p-10 btm-comp py-11">
         <div className="flex justify-between">
           <h1 className="text-2xl">Your Cart Items</h1>
           <button className="btn btn-primary" onClick={clearCart}>
             Clear Cart
           </button>
         </div>
-        <div className="center flex-col">
+        <div className="flex-col center">
           {cartItems?.map(({ id, quantity, title, image, price }, index) => (
             <CartItem
               key={id}
@@ -233,8 +237,8 @@ const CartPage = () => {
               removeItem={removeCartItem}
             />
           ))}
-          <div className="center py-8">
-            <h1 className="text-black text-2xl font-bold">
+          <div className="py-8 center">
+            <h1 className="text-2xl font-bold text-black">
               Total Price : ₹ {totalPrice * 83}.00
             </h1>
           </div>
@@ -245,7 +249,7 @@ const CartPage = () => {
           <div className="mt-10 flex gap-10 w-[39rem] items-center relative">
             <h1 className="text-2xl">Delivery address:</h1>
             <div
-              className="p-1 w-96 border bg-white center border-black rounded-sm cursor-pointer"
+              className="p-1 bg-white border border-black rounded-sm cursor-pointer w-96 center"
               onClick={() => setShowAddress(!showAddress)}
             >
               Choose delivery address
@@ -261,7 +265,7 @@ const CartPage = () => {
                   {addresses.map((address) => {
                     return (
                       <div
-                        className="p-1 cursor-pointer text-sm hover:bg-slate-100 hover:rounded-md"
+                        className="p-1 text-sm cursor-pointer hover:bg-slate-100 hover:rounded-md"
                         key={address._id}
                         onClick={() => selectDeliveryAddress(address)}
                       >
@@ -283,7 +287,7 @@ const CartPage = () => {
           <div className="mt-10 flex gap-10 w-[39rem] items-center relative">
             <h1 className="text-2xl">Payment Methods:</h1>
             <div
-              className="p-1 w-96 border bg-white center border-black rounded-sm cursor-pointer"
+              className="p-1 bg-white border border-black rounded-sm cursor-pointer w-96 center"
               onClick={() => setShowPayment(!showPayment)}
             >
               Choose payment method
@@ -291,16 +295,19 @@ const CartPage = () => {
             {showPayment && (
               <div
                 ref={paymentRef}
-                className="p-1 flex flex-col gap-3 absolute top-10 right-0 z-50 w-96 border bg-white center border-black rounded-sm "
+                className="absolute right-0 z-50 flex flex-col gap-3 p-1 bg-white border border-black rounded-sm top-10 w-96 center "
               >
-                <div className="p-3 w-2/3 text-sm">
-                  <p className="center cursor-pointer py-1 hover:bg-slate-100 hover:rounded-md">
-                    COD
+                <div className="w-2/3 p-3 text-sm">
+                  <p
+                    onClick={() => selectDeliveryPayment("COD")}
+                    className="py-1 cursor-pointer center hover:bg-slate-100 hover:rounded-md"
+                  >
+                    Cash on Delivery
                   </p>
                   {payments.map((payment) => {
                     return (
                       <div
-                        className="p-1 center cursor-pointer w-full hover:bg-slate-100 hover:rounded-md"
+                        className="w-full p-1 cursor-pointer center hover:bg-slate-100 hover:rounded-md"
                         key={payment._id}
                         onClick={() => selectDeliveryPayment(payment)}
                       >
@@ -319,10 +326,10 @@ const CartPage = () => {
             )}
           </div>
         </div>
-        <div className=" mt-10 center p-32">
+        <div className="p-32 mt-10 center">
           <button
             onClick={showConfirmModal}
-            className="btn btn-primary cursor-pointer w-full text-xl"
+            className="w-full text-xl cursor-pointer btn btn-primary"
           >
             Place your Order
           </button>

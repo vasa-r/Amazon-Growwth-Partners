@@ -6,7 +6,7 @@
 @tailwind components;
 
 body {
-  @apply relative  text-black/90 font-outfit;
+  @apply relative text-black/90 font-outfit;
 }
 
 body::before {
@@ -30,7 +30,7 @@ body::before {
 }
 
 .btm-comp {
-  @apply mt-20 w-full h-full;
+  @apply w-full h-full mt-20;
   /* height: calc(100vh-80px); */
 }
 
@@ -70,7 +70,7 @@ form label {
 }
 
 .center {
-  @apply flex justify-center items-center;
+  @apply flex items-center justify-center;
 }
 
 .error {

@@ -11,12 +11,12 @@ interface Address {
   _id: string;
 }
 interface Payment {
-  name: string;
+  name?: string;
   paymentType: string;
   cardNumber?: string;
   cvv?: string;
   upiId?: string;
-  _id: string;
+  _id?: string;
 }
 
 interface CartModalProps {
@@ -61,7 +61,7 @@ const ConfirmOrder = ({
         className=" p-10 rounded-[10px] bg-white font-semibold flex flex-col justify-between items-center py-[32px] pb-[46px] relative"
       >
         <img
-          className="w-6 absolute top-4 right-4 cursor-pointer"
+          className="absolute w-6 cursor-pointer top-4 right-4"
           src={Close}
           alt="close modal"
           onClick={() => setModal(false)}
@@ -91,7 +91,7 @@ const ConfirmOrder = ({
 
         <button
           onClick={createOrder}
-          className="btn btn-primary mt-8 w-full cursor-pointer text-lg text-white"
+          className="w-full mt-8 text-lg text-white cursor-pointer btn btn-primary"
         >
           Confirm Payment
         </button>

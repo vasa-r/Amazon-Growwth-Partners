@@ -10,6 +10,9 @@ import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import OrderPage from "./pages/OrderPage";
+import AboutPage from "./pages/AboutPage";
+import ContactUsPage from "./pages/ContactUs";
 
 const App = () => {
   const { token } = useAuth();
@@ -27,10 +30,13 @@ const App = () => {
             path="/auth/*"
             element={token ? <Navigate to={"/products"} /> : <AuthPage />}
           />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/query" element={<ContactUsPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/products" element={<MainPage />} />
             <Route path="/products/:id" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/orders" element={<OrderPage />} />
           </Route>
         </Routes>
       </div>
