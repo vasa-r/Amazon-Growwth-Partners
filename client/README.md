@@ -1,50 +1,53 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Client for App (frontend)
 
-Currently, two official plugins are available:
+Shoppy is a web application developed using React, TypeScript, and Tailwind CSS that delivers a user-friendly shopping experience. It features user authentication, enabling customers to easily sign up and sign in. Users can browse products through intuitive search and filtering options, with each product having its dedicated page showcasing images, descriptions, and pricing information. The shopping cart functionality allows users to add products and review their selections before proceeding to a straightforward checkout process, where they can select delivery addresses and payment methods. This application is designed to facilitate a smooth and efficient online shopping experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Environment Variables
 
-## Expanding the ESLint configuration
+To run this project, you will need to add the following environment variables to your .env file
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+`VITE_API_BASE_URL= your backend api URL` 
 
-- Configure the top-level `parserOptions` property like this:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/vasa-r/Amazon-Growwth-Partners.git
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Go to the project directory
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+  cd client
 ```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the client
+
+```bash
+  npm run dev
+```
+
+
+## Features
+
+- Classic UI
+- Protected Routes
+- JWT Auth
+- Cross platform
+- Lazy loading implemented
+
+
+
+## 🛠 Tech stack
+**Client:** Typescript, React, TailwindCSS
+
