@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import validateLogin from "../../validation/validateLogin";
 import { toast } from "react-toastify";
@@ -20,10 +20,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { loginContext, setToken } = useAuth();
-
-  useEffect(() => {
-    console.log(credentials);
-  }, [credentials]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

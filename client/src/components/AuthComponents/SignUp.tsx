@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import validateRegister from "../../validation/validateRegister";
 import { toast } from "react-toastify";
@@ -23,10 +23,6 @@ const SignUp = () => {
   const [formErrors, setFormErrors] = useState<Partial<Initialvalues>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(credentials);
-  }, [credentials]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

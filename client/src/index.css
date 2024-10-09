@@ -72,3 +72,7 @@ form label {
 .center {
   @apply flex justify-center items-center;
 }
+
+.error {
+  @apply text-sm text-red-500;
+}

@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CartItem from "../components/CartComponents/CartItem";
 import AddAddress from "../components/modals/AddAddress";
 import AddPayment from "../components/modals/AddPayment";
+import { getAddresses } from "../api/address";
+import { getPayments } from "../api/payment";
+import ConfirmOrder from "../components/modals/ConfirmOrder";
+import { toast } from "react-toastify";
+import { addorder } from "../api/order";
+import { useNavigate } from "react-router-dom";
 
 interface CartItemProps {
   id: string;
@@ -11,12 +17,52 @@ interface CartItemProps {
   image: string;
 }
 
+interface Address {
+  addressTitle: string;
+  buildNo: string;
+  address: string;
+  city: string;
+  pincode: string;
+  phone: string;
+  _id: string;
+}
+interface Payment {
+  name: string;
+  paymentType: string;
+  cardNumber?: string;
+  cvv?: string;
+  upiId?: string;
+  _id: string;
+}
+
+export interface OrderType {
+  address: string | undefined;
+  products: Array<{
+    id: string;
+    image: string;
+    price: string;
+    quantity: string;
+    title: string;
+  }>;
+  totalPrice: number;
+  paymentMode: string | undefined;
+}
+
 const CartPage = () => {
   const [showAddress, setShowAddress] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
   const [newPayment, setNewPayment] = useState(false);
+  const [confirmOrder, setConfirmOrder] = useState(false);
   const [cartItems, setCartItems] = useState<CartItemProps[]>([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const addressRef = useRef<HTMLDivElement | null>(null);
+  const paymentRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedItems = Object.keys(window.localStorage)
@@ -26,28 +72,20 @@ const CartPage = () => {
     setCartItems(storedItems);
   }, []);
 
-  //   useEffect(() => {
-  //     const handleClickOutside = (event: MouseEvent) => {
-  //       if (
-  //         menuRef.current &&
-  //         !menuRef.current.contains(event.target as Node) &&
-  //         menuButtonRef.current &&
-  //         !menuButtonRef.current.contains(event.target as Node)
-  //       ) {
-  //         setShowProfile(false);
-  //       }
-  //     };
+  useEffect(() => {
+    getAddress();
+    getPayment();
+  }, [newAddress, newPayment]);
 
-  //     if (showProfile) {
-  //       document.addEventListener("mousedown", handleClickOutside);
-  //     } else {
-  //       document.removeEventListener("mousedown", handleClickOutside);
-  //     }
+  const getAddress = async () => {
+    const items = await getAddresses();
+    setAddresses(items?.data?.data);
+  };
 
-  //     return () => {
-  //       document.removeEventListener("mousedown", handleClickOutside);
-  //     };
-  //   }, [showProfile]);
+  const getPayment = async () => {
+    const items = await getPayments();
+    setPayments(items?.data?.data);
+  };
 
   const clearCart = () => {
     Object.keys(window.localStorage)
@@ -62,10 +100,90 @@ const CartPage = () => {
 
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
+  console.log(cartItems);
 
   const totalPrice = cartItems.reduce((acc: number, item: CartItemProps) => {
     return acc + item.price * item.quantity;
   }, 0);
+
+  const selectDeliveryAddress = (arg: Address) => {
+    setSelectedAddress(arg);
+  };
+
+  const selectDeliveryPayment = (arg: Payment) => {
+    setSelectedPayment(arg);
+  };
+
+  const showConfirmModal = () => {
+    if (!selectedAddress) {
+      toast.error("Please select delivery address");
+      return;
+    } else if (!selectedPayment) {
+      toast.error("Please select payment method");
+      return;
+    }
+
+    setConfirmOrder(true);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        addressRef.current &&
+        !addressRef.current.contains(event.target as Node)
+      ) {
+        setShowAddress(false);
+      }
+      if (
+        paymentRef.current &&
+        !paymentRef.current.contains(event.target as Node)
+      ) {
+        setShowPayment(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showAddress, showPayment]);
+
+  const handleCreateOrder = async () => {
+    const order: OrderType = {
+      address: selectedAddress?._id,
+      products: cartItems.map((item) => ({
+        id: item.id,
+        image: item.image,
+        price: (item.price * 83).toString(),
+        quantity: item.quantity.toString(),
+        title: item.title,
+      })),
+      totalPrice: totalPrice * 83,
+      paymentMode: selectedPayment?.paymentType,
+    };
+    try {
+      console.log(order);
+      const response = await addorder(
+        order.address,
+        order.products,
+        order.totalPrice,
+        order.paymentMode
+      );
+      if (response.success || response.status === 201) {
+        toast.success(response?.data?.message);
+        setConfirmOrder(false);
+        clearCart();
+        navigate("/cart");
+      } else {
+        toast.error(
+          response?.data?.message ||
+            "Couldn't add adress. Please try again later"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -84,6 +202,15 @@ const CartPage = () => {
       )}
       {newPayment && (
         <AddPayment showPayment={newPayment} setModal={setNewPayment} />
+      )}
+      {confirmOrder && (
+        <ConfirmOrder
+          showModal={confirmOrder}
+          setModal={setConfirmOrder}
+          address={selectedAddress!}
+          payment={selectedPayment!}
+          createOrder={handleCreateOrder}
+        />
       )}
 
       <div className="btm-comp p-10  py-11">
@@ -125,8 +252,25 @@ const CartPage = () => {
             </div>
 
             {showAddress && (
-              <div className="p-1 flex flex-col gap-3 absolute top-10 right-[16px] z-50 w-96 border bg-white center border-black rounded-sm ">
-                <p>No Saved address</p>
+              <div
+                ref={addressRef}
+                className="p-1 flex flex-col gap-3 absolute top-10 right-[16px] z-50 w-96 border bg-white center border-black rounded-sm "
+              >
+                {addresses.length === 0 && <p>No Saved address</p>}
+                <div className="p-3">
+                  {addresses.map((address) => {
+                    return (
+                      <div
+                        className="p-1 cursor-pointer text-sm hover:bg-slate-100 hover:rounded-md"
+                        key={address._id}
+                        onClick={() => selectDeliveryAddress(address)}
+                      >
+                        <p>{address.address}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
                 <button
                   onClick={() => setNewAddress(true)}
                   className="btn btn-primary"
@@ -145,8 +289,26 @@ const CartPage = () => {
               Choose payment method
             </div>
             {showPayment && (
-              <div className="p-1 flex flex-col gap-3 absolute top-10 right-0 z-50 w-96 border bg-white center border-black rounded-sm ">
-                <p>No Saved payment methods</p>
+              <div
+                ref={paymentRef}
+                className="p-1 flex flex-col gap-3 absolute top-10 right-0 z-50 w-96 border bg-white center border-black rounded-sm "
+              >
+                <div className="p-3 w-2/3 text-sm">
+                  <p className="center cursor-pointer py-1 hover:bg-slate-100 hover:rounded-md">
+                    COD
+                  </p>
+                  {payments.map((payment) => {
+                    return (
+                      <div
+                        className="p-1 center cursor-pointer w-full hover:bg-slate-100 hover:rounded-md"
+                        key={payment._id}
+                        onClick={() => selectDeliveryPayment(payment)}
+                      >
+                        <p>{payment.paymentType}</p>
+                      </div>
+                    );
+                  })}
+                </div>
                 <button
                   onClick={() => setNewPayment(true)}
                   className="btn btn-primary"
@@ -158,7 +320,10 @@ const CartPage = () => {
           </div>
         </div>
         <div className=" mt-10 center p-32">
-          <button className="btn btn-primary cursor-pointer w-full text-xl">
+          <button
+            onClick={showConfirmModal}
+            className="btn btn-primary cursor-pointer w-full text-xl"
+          >
             Place your Order
           </button>
         </div>
